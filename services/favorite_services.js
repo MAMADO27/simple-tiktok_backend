@@ -1,8 +1,9 @@
 const asyncHandler = require('express-async-handler');
 const slugify = require('slugify');
 const Favorite = require('../modules/favorite_module');
-const Video = require('../modules/vedio_model'); // تأكد إن المسار صحيح
+const Video = require('../modules/vedio_model'); 
 const api_error = require('../utils/api_error');
+const api_fetchers = require('../utils/api_fetchers');
 
 // Create Favorite
 exports.add_favorite = asyncHandler(async (req, res) => {
@@ -42,10 +43,21 @@ exports.add_favorite = asyncHandler(async (req, res) => {
 
 // Get all favorites for the logged-in user
 exports.get_user_favorites = asyncHandler(async (req, res) => {
-  const favorites = await Favorite.find({ user: req.user._id });
+  const count_docs = await Favorite.countDocuments({ user: req.user._id });
+  const features = new api_fetchers(
+    Favorite.find({ user: req.user._id }).populate('target_id'),
+    req.query
+  )
+  .filter()
+  .sort()
+  .limitFields()
+  .paginate(count_docs);
+  
+  const favorites = await features.mongooseQuery;
 
   res.status(200).json({
     results: favorites.length,
+    pagination: features.pagination_result,
     data: favorites
   });
 });

@@ -52,7 +52,7 @@ app.use(express.json({ limit: '50mb' }));
 app.use((req, res, next) => {
   if (req.body) mongoSanitize.sanitize(req.body);
   if (req.params) mongoSanitize.sanitize(req.params);
-  // لاحظ إننا مش بنعدل req.query هنا
+  
   next();
 });
 

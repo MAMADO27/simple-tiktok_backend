@@ -25,41 +25,43 @@ class api_fetchers {
   }
 
   search(model_name) {
-  if (this.queryString.search) {
-    const search = this.queryString.search;
-    let searchCondition;
+    if (this.queryString.search) {
+      const search = this.queryString.search;
+      let searchCondition;
 
-    if (model_name === 'products') {
-      searchCondition = {
-        $or: [
-          { title: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } },
-        ],
-      };
-    } else if (model_name === 'brands' || model_name === 'categories' || model_name === 'subcategories') {
-      searchCondition = {
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { title: { $regex: search, $options: 'i' } }
-        ]
-      };
-    } else {
-      searchCondition = {
-        title: { $regex: search, $options: 'i' },
-      };
+      if (model_name === 'videos') {
+        searchCondition = {
+          $or: [
+            { title: { $regex: search, $options: 'i' } },
+            { description: { $regex: search, $options: 'i' } },
+            { hashtags: { $regex: search, $options: 'i' } }
+          ]
+        };
+      } else if (model_name === 'images') {
+        searchCondition = {
+          $or: [
+            { title: { $regex: search, $options: 'i' } },
+            { description: { $regex: search, $options: 'i' } },
+            { hashtags: { $regex: search, $options: 'i' } }
+          ]
+        };
+      } else {
+        searchCondition = {
+          title: { $regex: search, $options: 'i' },
+        };
+      }
+
+      if (Object.keys(this.mongoQuery).length > 0) {
+        this.mongoQuery = { $and: [this.mongoQuery, searchCondition] };
+      } else {
+        this.mongoQuery = searchCondition;
+      }
     }
 
-    if (Object.keys(this.mongoQuery).length > 0) {
-      this.mongoQuery = { $and: [this.mongoQuery, searchCondition] };
-    } else {
-      this.mongoQuery = searchCondition;
-    }
+    this.mongooseQuery = this.mongooseQuery.find(this.mongoQuery);
+
+    return this;
   }
-
-  this.mongooseQuery = this.mongooseQuery.find(this.mongoQuery);
-
-  return this;
-}
 
   sort() {
     if (this.queryString.sort) {

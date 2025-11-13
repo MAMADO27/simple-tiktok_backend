@@ -6,6 +6,7 @@ const api_error = require('../utils/api_error');
 const asyncHandler = require('express-async-handler');
 const multer = require('multer');
 const streamifier = require('streamifier');
+const api_fetchers = require('../utils/api_fetchers');
 
 // Cloudinary Config
 cloudinary.config({
@@ -87,8 +88,22 @@ exports.create_video = asyncHandler(async (req, res) => {
 
 // Get All Videos
 exports.get_all_videos = asyncHandler(async (req, res) => {
-  const videos = await vedio_schema.find();
-  res.status(200).json({ results: videos.length, data: videos });
+  const count_docs = await vedio_schema.countDocuments();
+  
+  const features = new api_fetchers(vedio_schema.find(), req.query)
+    .filter()
+    .search('videos')
+    .sort()
+    .limitFields()
+    .paginate(count_docs);
+  
+  const videos = await features.mongooseQuery;
+  
+  res.status(200).json({ 
+    results: videos.length, 
+    pagination: features.pagination_result,
+    data: videos 
+  });
 });
 
 // Get Video By ID
@@ -132,4 +147,3 @@ exports.delete_video = asyncHandler(async (req, res) => {
 
  res.status(200).json({ message: 'Video deleted', data: video });
 });
-
