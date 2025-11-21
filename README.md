@@ -21,7 +21,7 @@ This project provides authentication, video & image uploads, likes, comments, fa
 - Express.js
 - MongoDB & Mongoose
 - Socket.io
-- Multer
+- Multer & Streamifier (File uploads)
 - Nodemailer
 
 ---

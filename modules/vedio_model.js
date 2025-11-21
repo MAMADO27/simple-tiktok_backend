@@ -33,6 +33,14 @@ const vedio_schema=new mongoose.Schema({
         type: Number,
     
     },
+    video_url: {
+  type: String,
+  required: [true, 'Video URL is required']
+    },
+   public_id: {
+  type: String,
+  required: [true, 'Public ID is required']
+    },
     slug: {
         type: String,
         unique: true
@@ -45,30 +53,7 @@ const vedio_schema=new mongoose.Schema({
 
 { timestamps: true });
 
-const set_thumbnail_url = (doc) => {
-    if (doc.thumbnail_url && !doc.thumbnail_url.startsWith('http')) {
-        doc.thumbnail_url = `${process.env.BASE_URL}/videos/${doc.thumbnail_url}`;
-    }
-};
 
-const set_video_url = (doc) => {
-    if (doc.video_url && !doc.video_url.startsWith('http')) {
-        doc.video_url = `${process.env.BASE_URL}/videos/${doc.video_url}`;
-    }
-};
 
-vedio_schema.post('init', function(doc) {
-    set_thumbnail_url(doc);
-});
-vedio_schema.post('save', function(doc) {
-    set_thumbnail_url(doc);
-});
-
-vedio_schema.post('init', function(doc) {
-    set_video_url(doc);
-});
-vedio_schema.post('save', function(doc) {
-    set_video_url(doc);
-});
 
 module.exports = mongoose.model('Vedio', vedio_schema);

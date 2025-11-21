@@ -28,6 +28,7 @@ const favorite_route = require('./routes/favorite_route');
 const conversation_route = require('./routes/conversation_route');
 const message_route = require('./routes/message_route');
 const socketHandler = require('./services/socket_handler');
+const chat_test_route=require('./routes/chat_test_route');
 
 // Initialize Express app
 const app = express();
@@ -91,6 +92,7 @@ app.use('/api/v1/favorite', favorite_route);
 app.use('/api/v1/users', user_route);
 app.use('/api/v1/conversations', conversation_route);
 app.use('/api/v1/messages', message_route);
+app.use('/',chat_test_route);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
